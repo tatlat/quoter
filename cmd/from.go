@@ -6,8 +6,10 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"strings"
+	"time"
 
 	"golang.org/x/net/html"
 
@@ -51,7 +53,7 @@ var fromCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(fromCmd)
 
-	fromCmd.Flags().IntVarP(&max_quotes, "max_quotes", "mq", 1, "The number of quotes to retrieve")
+	fromCmd.Flags().IntVarP(&max_quotes, "max_quotes", "m", 1, "The number of quotes to retrieve")
 	fromCmd.Flags().BoolVarP(&random, "random", "r", false, "Randomizes quote selection if true")
 }
 
@@ -168,5 +170,14 @@ func extractDD(tokenizer *html.Tokenizer) string {
 
 func displayQuotes(source Source) {
 	fmt.Println("Source: " + source.title)
-	fmt.Println(source.quotes[0])
+	for i := 0; i < max_quotes; i++ {
+		if !random {
+			fmt.Println(source.quotes[i])
+		} else {
+			rand.Seed(time.Now().UnixNano())
+			r := rand.Intn(len(source.quotes))
+			fmt.Println(source.quotes[r])
+		}
+		fmt.Println()
+	}
 }
